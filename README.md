@@ -18,10 +18,46 @@ python3  -m  venv  myvenv
 source  myvenv/bin/activate
 ```
 
-
-# Execução do painel Streamlit
+# Install dependencies
 ```sh
-streamlit run main.py 
+pip install -r requirements.txt
+```
+
+# Run the application
+```sh
+streamlit run main.py
+```
+
+# Run tests
+```sh
+pytest
+```
+
+# Format code
+```sh
+black .
+isort .
+```
+
+# Type checking
+```sh
+mypy .
 ```
 
 
+# Current Project Structure:
+resale_price_calculator/
+├── main.py                 # Application entry point
+├── constants.py            # Centralized constants
+├── requirements.txt        # Dependencies
+├── pyproject.toml         # Project configuration
+├── .pre-commit-config.yaml # Code quality hooks
+├── domain/
+│   ├── __init__.py
+│   └── pricing.py         # Business logic
+├── ui/
+│   ├── __init__.py
+│   └── components.py      # UI components
+└── tests/
+    ├── __init__.py
+    └── test_pricing.py    # Comprehensive tests
