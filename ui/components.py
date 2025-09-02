@@ -4,6 +4,7 @@ UI components for the resale price calculator.
 import streamlit as st
 import pandas as pd
 import numpy as np
+import math
 from typing import Tuple
 
 from constants import (
@@ -46,14 +47,15 @@ def render_inputs() -> Tuple[str, str, float, float, float, float, float]:
 
     # Purchase price input
     purchase_price = st.number_input(
-        "Valor da compra em R$ (reais):",
+        "Custo de compra em reais (R$):",
         min_value=0.0,
         value=DEFAULT_PURCHASE_PRICE,
         format="%.2f"
     )
 
     # Parameter inputs
-    col_selic, col_profit_rate, col_interest, col_margin = st.columns(4)
+    # col_selic, col_profit_rate, col_interest, col_margin = st.columns(4)
+    col_selic, col_profit_rate, col_margin = st.columns(3)
 
     with col_selic:
         selic_rate = st.number_input(
@@ -66,32 +68,35 @@ def render_inputs() -> Tuple[str, str, float, float, float, float, float]:
 
     with col_profit_rate:
         profit_rate = st.number_input(
-            "Lucro desejado (%):",
+            "Margem de venda (%):",
             min_value=0.0,
             step=PROFIT_STEP,
             value=DEFAULT_PROFIT_RATE,
             format="%.2f"
         ) / 100  # Convert to decimal
 
-    with col_interest:
-        min_interest_pct = minimum_acceptable_interest(purchase_price, selic_rate, 12)
-        default_interest_pct = max(DEFAULT_INTEREST_RATE, min_interest_pct)
-        interest_rate = st.number_input(
-            "Taxa de juros (%):",
-            min_value=min_interest_pct,
-            step=INTEREST_STEP,
-            value=default_interest_pct,
-            format="%.2f"
-        ) / 100  # Convert to decimal
+    # with col_interest:
+    #     min_interest_pct = minimum_acceptable_interest(purchase_price, selic_rate, 12)
+    #     default_interest_pct = max(DEFAULT_INTEREST_RATE, min_interest_pct)
+    #     interest_rate = st.number_input(
+    #         "Taxa de juros (%):",
+    #         min_value=min_interest_pct,
+    #         step=INTEREST_STEP,
+    #         value=default_interest_pct,
+    #         format="%.2f"
+    #     ) / 100  # Convert to decimal
 
     with col_margin:
         seller_margin = st.number_input(
-            "Margem do vendedor (%):",
+            "Margem de comissão (%):",
             min_value=0.0,
             step=MARGIN_STEP,
             value=DEFAULT_SELLER_MARGIN,
             format="%.2f"
         ) / 100  # Convert to decimal
+
+    min_interest_pct = minimum_acceptable_interest(purchase_price, selic_rate, 12)
+    interest_rate = math.ceil(min_interest_pct)
 
     return profit_application, sale_type, purchase_price, selic_rate, profit_rate, interest_rate, seller_margin
 

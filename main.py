@@ -22,6 +22,7 @@ def main():
         profit_rate, interest_rate, seller_margin
     ) = render_inputs()
 
+
     # Main calculation
     try:
         sale_price, net_profit = calculate_sale_price(
@@ -31,7 +32,7 @@ def main():
 
         # Display results
         st.success(f"💰 Preço de venda **{sale_type.lower()}** sugerido: R$ {sale_price:,.2f}")
-        st.success(f"💰 Margem do vendedor ({seller_margin*100:,.2f}%): R$ {net_profit * seller_margin:,.2f}")
+        st.success(f"💰 Comissão do vendedor ({seller_margin*100:,.2f}%): R$ {net_profit * seller_margin:,.2f}")
 
     except ValueError as e:
         st.error(f"Erro no cálculo: {e}")
@@ -50,5 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
