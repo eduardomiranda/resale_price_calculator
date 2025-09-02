@@ -113,34 +113,17 @@ def render_sensitivity_analysis(
     if not st.checkbox("Calcular variações na taxas de juros e lucro desejado"):
         return
 
-    col_profit_delta, col_interest_delta = st.columns(2)
+    profit_delta = st.number_input(
+        "Total de variações na taxa de lucro:",
+        min_value=1,
+        step=1,
+        value=DEFAULT_PROFIT_DELTA
+    )
 
-    with col_profit_delta:
-        profit_delta = st.number_input(
-            "Total de variações na taxa de lucro:",
-            min_value=1,
-            step=1,
-            value=DEFAULT_PROFIT_DELTA
-        )
-
-    with col_interest_delta:
-        interest_delta = st.number_input(
-            "Total de variações na taxa de juros:",
-            min_value=1,
-            step=1,
-            value=DEFAULT_INTEREST_DELTA
-        )
-
-    if sale_type == "Anual":
-        render_annual_sensitivity(
-            profit_application, purchase_price, tax_rate, profit_rate, 
-            interest_rate, profit_delta
-        )
-    elif sale_type == "Mensal":
-        render_monthly_sensitivity(
-            profit_application, purchase_price, tax_rate, profit_rate,
-            interest_rate, profit_delta, interest_delta
-        )
+    render_annual_sensitivity(
+        profit_application, purchase_price, tax_rate, profit_rate, 
+        interest_rate, profit_delta
+    )
 
 
 def render_annual_sensitivity(
@@ -173,8 +156,8 @@ def render_annual_sensitivity(
             continue
 
     if data:
-        df = pd.DataFrame(data, columns=['Lucro desejado (%)', 'Preço de venda (R$)'])
-        df.set_index('Lucro desejado (%)', inplace=True)
+        df = pd.DataFrame(data, columns=['Margem de venda (%)', 'Preço de venda (R$)'])
+        df.set_index('Margem de venda (%)', inplace=True)
 
         sns.heatmap(
             df, annot=True, fmt='.2f', linewidths=1, cbar=False,
