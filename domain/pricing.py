@@ -58,12 +58,26 @@ def calculate_sale_price(
         if profit_application == "Aplicado na compra":
             sale_price = purchase_price * net_multiplier + (purchase_price * profit_rate * net_multiplier)
             net_profit = sale_price - (sale_price * tax_rate) - purchase_price
+
+            sale_price_txt = f'''\n\n**multiplicador líquido** = 1 ÷ (100% - *taxa de imposto*) '''
+            sale_price_txt += f'''\n\n**multiplicador líquido** = 1 ÷ (100% - {tax_rate*100:,.2f}%) = {net_multiplier:,.5f}'''
+            sale_price_txt += f'''\n\n'''
+            sale_price_txt += f'''\n\n**preço de venda** = *custo de compra* × *multiplicador líquido* + (*custo de compra* × *multiplicador líquido* × *margem de venda*)'''
+            sale_price_txt += f'''\n\n**preço de venda** = *custo de compra* × *multiplicador líquido* × (1 + *margem de venda*)'''
+            sale_price_txt += f'''\n\n**preço de venda** = R\$ {purchase_price:,.2f} × {net_multiplier:,.5f} × (1 + {profit_rate*100:,.2f}%) = **R$ {sale_price:,.2f}**'''
         elif profit_application == "Aplicado na venda":
             sale_denominator = 1 - profit_rate - tax_rate
             if sale_denominator <= 0:
                 raise ValueError("profit_rate + tax_rate makes calculation impossible (>= 100%)")
             sale_price = purchase_price / sale_denominator
             net_profit = sale_price - (sale_price * tax_rate) - purchase_price
+
+            sale_price_txt = f'''**denominador de venda** = 100% - *margem de venda* -  *taxa de imposto*'''
+            sale_price_txt += f'''\n\n**denominador de venda** = 100% - {profit_rate*100:,.2f}% -  {tax_rate * 100:,.2f}% = {sale_denominator*100:,.2f}%'''
+            sale_price_txt += f'''\n\n'''
+            sale_price_txt += f'''\n\n**preço de venda** = *custo de compra* ÷ *denominador de venda*'''
+            sale_price_txt += f'''\n\n**preço de venda** = R\$ {purchase_price:,.2f} ÷ {sale_denominator:,.4f} = **R$ {sale_price:,.2f}**'''
+
         else:
             raise ValueError(f"Invalid profit_application: {profit_application}")
 
@@ -71,24 +85,46 @@ def calculate_sale_price(
         if profit_application == "Aplicado na compra":
             annual_sale_price = (
                 purchase_price * net_multiplier +
-                (purchase_price * profit_rate * net_multiplier) +
-                (purchase_price * interest_rate * net_multiplier)
+                (purchase_price * net_multiplier * profit_rate ) +
+                (purchase_price * net_multiplier * interest_rate)
             )
             sale_price = annual_sale_price / ANNUAL_MONTHS
             net_profit = annual_sale_price - (annual_sale_price * tax_rate) - (purchase_price * interest_rate) - purchase_price
+
+            sale_price_txt = f'''\n\n**multiplicador líquido** = 1 ÷ (100% - *taxa de imposto*) '''
+            sale_price_txt += f'''\n\n**multiplicador líquido** = 1 ÷ (100% - {tax_rate*100:,.2f}%) = {net_multiplier:,.5f}'''
+            sale_price_txt += f'''\n\n'''
+            sale_price_txt += f'''**preço de venda anual** = (*preço de compra* × *multiplicador líquido*) + (*preço de compra* × *multiplicador líquido* × *margem de venda*) + (*preço de compra* × *multiplicador líquido* × *taxa de juros*)'''
+            sale_price_txt += f'''\n\n**preço de venda anual** = *preço de compra* × *multiplicador líquido* × (100% + *margem de venda* + *taxa de juros*)'''
+            sale_price_txt += f'''\n\n'''
+            sale_price_txt += f'''\n\n**preço de venda anual** = R\$ {purchase_price:,.2f}  × {net_multiplier:,.5f} × (100% + {profit_rate*100:,.2f}% + {interest_rate*100:,.2f}%) = **R$ {annual_sale_price:,.2f}**'''
+            sale_price_txt += f'''\n\n'''
+            sale_price_txt += f'''\n\n**preço de venda mensal** = *preço de venda anual* ÷ 12'''
+            sale_price_txt += f'''\n\n**preço de venda mensal** =  {annual_sale_price:,.2f} ÷ 12 = **R$ {sale_price:,.2f}**'''
+
         elif profit_application == "Aplicado na venda":
             sale_denominator = 1 - profit_rate - tax_rate
+
             if sale_denominator <= 0:
                 raise ValueError("profit_rate + tax_rate makes calculation impossible (>= 100%)")
             annual_sale_price = (purchase_price / sale_denominator) + ((purchase_price * interest_rate) * net_multiplier)
             sale_price = annual_sale_price / ANNUAL_MONTHS
             net_profit = annual_sale_price - (annual_sale_price * tax_rate) - (purchase_price * interest_rate) - purchase_price
+
+            sale_price_txt = f'''**denominador de venda** = 100% - *margem de venda* -  *taxa de imposto*'''
+            sale_price_txt += f'''\n\n**denominador de venda** = 100% - {profit_rate*100:,.2f}% -  {tax_rate * 100:,.2f}% = {sale_denominator*100:,.2f}%'''
+            sale_price_txt += f'''\n\n**multiplicador líquido** = 1 ÷ (100% - *taxa de imposto*) '''
+            sale_price_txt += f'''\n\n**multiplicador líquido** = 1 ÷ (100% - {tax_rate*100:,.2f}%) = {net_multiplier:,.5f}'''
+            sale_price_txt += f'''\n\n**preço de venda anual** = (*preço de compra* ÷ *denominador de venda*) + (*preço de compra* × *taxa de juros* × *multiplicador líquido*)'''
+            sale_price_txt += f'''\n\n**preço de venda anual** = (R\$ {purchase_price:,.2f} ÷ {sale_denominator:,.4f}) + (R\$ {purchase_price:,.2f} × {interest_rate*100:,.2f}% × {net_multiplier:,.5f}) = **R$ {annual_sale_price:,.2f}**'''
+            sale_price_txt += f'''\n\n**preço de venda mensal** = *preço de venda anual* ÷ 12'''
+            sale_price_txt += f'''\n\n**preço de venda mensal** =  {annual_sale_price:,.2f} ÷ 12 = **R$ {sale_price:,.2f}**'''
         else:
             raise ValueError(f"Invalid profit_application: {profit_application}")
     else:
         raise ValueError(f"Invalid sale_type: {sale_type}")
 
-    return sale_price, net_profit
+    return sale_price, net_profit, sale_price_txt
 
 
 def iterate_interest_costs(

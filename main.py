@@ -7,7 +7,8 @@ from constants import EFFECTIVE_TAX_RATE
 from domain.pricing import calculate_sale_price
 from ui.components import (
     render_inputs, render_sensitivity_analysis, 
-    render_capital_cost_table, render_tax_details
+    render_capital_cost_table, render_tax_details,
+    render_sales_price_calculations_details
 )
 
 
@@ -25,7 +26,7 @@ def main():
 
     # Main calculation
     try:
-        sale_price, net_profit = calculate_sale_price(
+        sale_price, net_profit, sale_price_txt = calculate_sale_price(
             sale_type, profit_application, purchase_price, EFFECTIVE_TAX_RATE,
             profit_rate, interest_rate
         )
@@ -34,11 +35,15 @@ def main():
         st.success(f"💰 Preço de venda **{sale_type.lower()}** sugerido: R$ {sale_price:,.2f}")
         st.success(f"💰 Comissão do vendedor ({seller_margin*100:,.2f}%): R$ {net_profit * seller_margin:,.2f}")
 
+
     except ValueError as e:
         st.error(f"Erro no cálculo: {e}")
         return
 
     # Additional features
+    render_sales_price_calculations_details(sale_price_txt)
+
+
     render_sensitivity_analysis(
         sale_type, profit_application, purchase_price, EFFECTIVE_TAX_RATE,
         profit_rate, interest_rate
