@@ -11,6 +11,7 @@ from ui.components import (
     render_sales_price_calculations_details
 )
 
+is_admin = st.query_params.get("access_type") == "admin"
 
 def main():
     """Main application entry point."""
@@ -21,7 +22,7 @@ def main():
     (
         profit_application, sale_type, purchase_price, selic_rate,
         profit_rate, interest_rate, seller_margin
-    ) = render_inputs()
+    ) = render_inputs(is_admin)
 
 
     # Main calculation
@@ -40,16 +41,16 @@ def main():
         st.error(f"Erro no cálculo: {e}")
         return
 
-    # Additional features
-    render_sales_price_calculations_details(sale_price_txt)
-
-
     render_sensitivity_analysis(
         sale_type, profit_application, purchase_price, EFFECTIVE_TAX_RATE,
         profit_rate, interest_rate
     )
 
-    render_capital_cost_table(purchase_price, selic_rate)
+    # Additional features
+    if(is_admin):
+        render_sales_price_calculations_details(sale_price_txt)
+        render_capital_cost_table(purchase_price, selic_rate)
+
 
     render_tax_details()
 

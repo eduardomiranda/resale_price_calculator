@@ -17,7 +17,7 @@ from constants import (
 from domain.pricing import calculate_sale_price, minimum_acceptable_interest, iterate_interest_costs
 
 
-def render_inputs() -> Tuple[str, str, float, float, float, float, float]:
+def render_inputs(is_admin: bool) -> Tuple[str, str, float, float, float, float, float]:
     """Render all input widgets and return their values.
     
     Returns:
@@ -26,24 +26,35 @@ def render_inputs() -> Tuple[str, str, float, float, float, float, float]:
     """
     st.title("📊 Calculadora de Preço de Venda")
 
-    # Selection columns
-    col_profit, col_sale = st.columns(2)
 
-    with col_profit:
-        profit_application = st.pills(
-            "Seleciona onde a margem de lucro será aplicada:",
-            options=OPTIONS_LUCRO,
-            selection_mode="single",
-            default=OPTIONS_LUCRO[0]
-        )
+    if is_admin:
+        # Selection columns
+        col_profit, col_sale = st.columns(2)
+        with col_profit:
+                profit_application = st.pills(
+                "Seleciona onde a margem de venda será aplicada:",
+                options=OPTIONS_LUCRO,
+                selection_mode="single",
+                default=OPTIONS_LUCRO[1]
+            )
 
-    with col_sale:
+        with col_sale:
+                sale_type = st.pills(
+                "Seleciona o modelo de venda:",
+                options=OPTIONS_VENDA,
+                selection_mode="single",
+                default=OPTIONS_VENDA[0]
+            )
+    else: 
+        profit_application = OPTIONS_LUCRO[1]
+
         sale_type = st.pills(
             "Seleciona o modelo de venda:",
             options=OPTIONS_VENDA,
             selection_mode="single",
             default=OPTIONS_VENDA[0]
         )
+
 
     # Purchase price input
     purchase_price = st.number_input(
