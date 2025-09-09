@@ -25,6 +25,9 @@ def render_inputs(is_admin: bool) -> Tuple[str, str, float, float, float, float,
                  profit_rate, interest_rate, seller_margin)
     """
     st.title("📊 Calculadora de Preço de Venda")
+    # Streamlit emoji shortcodes
+    # https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
+    st.badge(" Calculadora utilizada para o cenário de **compra local** e **venda local**!", icon="🚨", color="red")
 
 
     if is_admin:
